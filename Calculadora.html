@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculadora de Estacionamiento</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            color: #666;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            text-align: left;
+            font-weight: bold;
+            color: #555;
+        }
+        input, button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #resultado {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Calculadora de Estacionamiento</h2>
+        <p>Ingresa los horarios para calcular la tarifa.</p>
+
+        <label for="horaEntrada">Hora de entrada:</label>
+        <input type="time" id="horaEntrada">
+
+        <label for="horaSalida">Hora de cobro:</label>
+        <input type="time" id="horaSalida">
+
+        <button onclick="calcularTarifa()">Calcular Tarifa</button>
+
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        function calcularTarifa() {
+            const entradaStr = document.getElementById('horaEntrada').value;
+            const salidaStr = document.getElementById('horaSalida').value;
+
+            if (!entradaStr || !salidaStr) {
+                alert("Por favor, ingresa ambas horas.");
+                return;
+            }
+
+            const fechaBase = "2025-01-01T";
+            const entrada = new Date(fechaBase + entradaStr + ":00");
+            const salida = new Date(fechaBase + salidaStr + ":00");
+
+            let diferenciaMs = salida - entrada;
+            let diasTotales = 0;
+
+            if (diferenciaMs < 0) {
+                diferenciaMs += 24 * 60 * 60 * 1000;
+            }
+            
+            diasTotales = Math.floor(diferenciaMs / (24 * 60 * 60 * 1000));
+            const minutosRestantes = Math.round((diferenciaMs % (24 * 60 * 60 * 1000)) / (1000 * 60));
+
+            let tarifaTotal = 0;
+
+            tarifaTotal += diasTotales * 100;
+
+            if (minutosRestantes <= 30) {
+                tarifaTotal += 0;
+            } else if (minutosRestantes >= 31 && minutosRestantes <= 59) {
+                tarifaTotal += 20;
+            } else if (minutosRestantes >= 60 && minutosRestantes <= 120) {
+                tarifaTotal += 30;
+            } else if (minutosRestantes >= 121 && minutosRestantes <= 180) {
+                tarifaTotal += 45;
+            } else if (minutosRestantes >= 181 && minutosRestantes <= 240) {
+                tarifaTotal += 55;
+            } else if (minutosRestantes >= 241 && minutosRestantes <= 360) {
+                tarifaTotal += 75;
+            } else if (minutosRestantes >= 361 && minutosRestantes <= 1440) {
+                tarifaTotal += 100;
+            }
+
+            const resultadoDiv = document.getElementById('resultado');
+            let textoTiempo = "";
+            
+            if (diasTotales > 0) {
+                textoTiempo += `${diasTotales} día(s) y `;
+            }
+            textoTiempo += `${minutosRestantes} minuto(s)`;
+
+            resultadoDiv.innerHTML = `Tiempo total: ${textoTiempo} <br> Tarifa total: **$${tarifaTotal}**`;
+        }
+    </script>
+
+</body>
+</html>
